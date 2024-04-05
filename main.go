@@ -35,6 +35,9 @@ func getAllCustomers(w http.ResponseWriter, r *http.Request) {
 		{Name: "Obinna", City: "Logand", Zipcode: "78575"},
 	}
 
-	//encode the slice of customers into json format
+	//make the response header to be json (if not it did return as text)
+	w.Header().Add("Content-Type", "application/json")
+
+	//encode the slice of customers into json format (pass IO writer - w)
 	json.NewEncoder(w).Encode(customers)
 }
