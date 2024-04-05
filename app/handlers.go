@@ -5,6 +5,8 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type Customer struct {
@@ -38,4 +40,10 @@ func getAllCustomers(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(customers)
 	}
 
+}
+
+func getCustomer(w http.ResponseWriter, r *http.Request) {
+	//this returns all the pattern segment name
+	vars := mux.Vars(r)
+	fmt.Fprint(w, vars["customer_id"])
 }
