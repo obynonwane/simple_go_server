@@ -42,6 +42,10 @@ func getAllCustomers(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func createCustomer(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "post request received")
+}
+
 func getCustomer(w http.ResponseWriter, r *http.Request) {
 	//this returns all the pattern segment name
 	vars := mux.Vars(r)
