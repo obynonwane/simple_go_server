@@ -9,10 +9,35 @@ import (
 )
 
 type CustomerRepositoryDb struct {
+	client *sql.DB
 }
 
 func (d CustomerRepositoryDb) FindAll([]Customer, error) {
-	client, err := sql.Open("mysql", "user:password@/dbname")
+
+	FindAllSql := "select customer_id, name, city, zipcode, date_of_birth, status from customers"
+	rows, err := d.client.Query(FindAllSql)
+	if err != nil {
+		log.Println("Error while querying customer table" + err.Error())
+		return nil, err
+	}
+
+	customers := make([]Customer, 0)
+	for rows.Next() {
+		var c Customer
+		err := rows.Scan(&c.Id, &c.Name, &c.City, &c.Zipcode, &c.DateofBirth, &c.Status)
+		if err != nil {
+			log.Println("Error while scanning customers" + err.Error())
+			return nil, err
+		}
+
+		customers = append(customers, c)
+	}
+
+	return customers, nil
+}
+
+func NewCustomerRepositoryDb() CustomerRepositoryDb {
+	client, err := sql.Open("mysql", "root:codecamp@tcp(localhost:3306)/banking")
 	if err != nil {
 		panic(err)
 	}
@@ -21,9 +46,5 @@ func (d CustomerRepositoryDb) FindAll([]Customer, error) {
 	client.SetMaxOpenConns(10)
 	client.SetMaxIdleConns(10)
 
-	FindAllSql := "select customer_id, name, city, zipcode, date_of_birth, status from customers"
-	rows, err := client.Query(FindAllSql)
-	if err != nil {
-		log.Println("Error while querying customer table" + err.Error())
-	}
+	return CustomerRepositoryDb{client: client}
 }
