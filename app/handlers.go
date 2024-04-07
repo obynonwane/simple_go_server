@@ -3,28 +3,24 @@ package app
 import (
 	"encoding/json"
 	"encoding/xml"
-	"fmt"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/obynonwane/banking/service"
 )
 
+// concrete implementaion of customer service
+type CustomerHandlers struct {
+	service service.CustomerService
+}
 type Customer struct {
 	Name    string `json:"full_name" xml:"full_name"`
 	City    string `json:"city" xml:"city"`
 	Zipcode string `json:"zip_code" xml:"zip_code"`
 }
 
-func greet(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hellow World!")
-}
-func getAllCustomers(w http.ResponseWriter, r *http.Request) {
+func (ch *CustomerHandlers) getAllCustomers(w http.ResponseWriter, r *http.Request) {
 
-	//create a slice of customers
-	customers := []Customer{
-		{Name: "Ahish", City: "New Delhi", Zipcode: "7895759"},
-		{Name: "Obinna", City: "Logand", Zipcode: "78575"},
-	}
+	customers, _ := ch.service.GetAllCustomers()
 
 	if r.Header.Get("Content-Type") == "application/xml" {
 		//make the response header to be json (if not it did return as text)
@@ -40,14 +36,4 @@ func getAllCustomers(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(customers)
 	}
 
-}
-
-func createCustomer(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "post request received")
-}
-
-func getCustomer(w http.ResponseWriter, r *http.Request) {
-	//this returns all the pattern segment name
-	vars := mux.Vars(r)
-	fmt.Fprint(w, vars["customer_id"])
 }

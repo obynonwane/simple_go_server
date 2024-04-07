@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/obynonwane/banking/domain"
+	"github.com/obynonwane/banking/service"
 )
 
 func Start() {
@@ -12,10 +14,11 @@ func Start() {
 	// mux := http.NewServeMux()
 	router := mux.NewRouter()
 	// define  routes
-	router.HandleFunc("/greet", greet).Methods(http.MethodGet)
-	router.HandleFunc("/customers", getAllCustomers).Methods(http.MethodGet)
-	router.HandleFunc("/customers", createCustomer).Methods(http.MethodPost)
-	router.HandleFunc("/customers/{customer_id:[0-9]+}", getCustomer).Methods(http.MethodGet)
+
+	//wiring
+	ch := CustomerHandlers{service: service.NewCustomerService(domain.NewCustomerRepositoryStub())}
+
+	router.HandleFunc("/customers", ch.getAllCustomers).Methods(http.MethodGet)
 
 	// starting a server
 	log.Fatal(http.ListenAndServe("localhost:8000", router))
